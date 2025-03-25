@@ -180,12 +180,12 @@ const StudentRegisterForm = () => {
               Login
             </Link>
           </p>
-          <p className="text-gray-600">
+          {/* <p className="text-gray-600">
             Are you a lecturer?{' '}
             <Link to="/register/lecturer" className="text-green-500 hover:text-green-700">
               Register as Lecturer
             </Link>
-          </p>
+          </p> */}
         </div>
       </form>
     </div>
