@@ -4,6 +4,8 @@ import MainLayout from '../components/layout/MainLayout';
 import HomePage from '../pages/HomePage';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
+import StudentRegisterForm from '../components/auth/StudentRegisterForm';
+import LecturerRegisterForm from '../components/auth/LecturerRegisterForm';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 // Student Pages
@@ -31,7 +33,8 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
             <Route path="login" element={<LoginForm />} />
-            <Route path="register" element={<RegisterForm />} />
+            <Route path="register" element={<StudentRegisterForm />} />
+            <Route path="register/lecturer" element={<LecturerRegisterForm />} />
             
             {/* Protected Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={['student']} />}>
