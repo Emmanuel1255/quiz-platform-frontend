@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with a base URL
 const api = axios.create({
-  baseURL: 'https://quiz-platform-backend-nine.vercel.app/api',
+  baseURL: 'https://quiz-platform-backend-omega.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
