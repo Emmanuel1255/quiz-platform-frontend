@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { bulkUploadQuestions } from '../../services/questionService';
+import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
+import { bulkUploadQuestionsAsJson } from '../../services/questionService';
 
 const BulkQuestionUpload = () => {
   const { id: quizId } = useParams();
@@ -38,10 +40,24 @@ const BulkQuestionUpload = () => {
       setError(null);
       setSuccess(null);
       
-      const formData = new FormData();
-      formData.append('questions', file);
+      // Parse file on client side
+      let questions = [];
       
-      const result = await bulkUploadQuestions(quizId, formData);
+      if (fileExtension === 'csv') {
+        // Parse CSV
+        questions = await parseCSV(file);
+      } else {
+        // Parse Excel
+        questions = await parseExcel(file);
+      }
+      
+      // Validate questions basic structure
+      if (!questions || questions.length === 0) {
+        throw new Error('No valid questions found in file');
+      }
+      
+      // Send parsed data to server
+      const result = await bulkUploadQuestionsAsJson(quizId, questions);
       
       setSuccess(`Successfully uploaded ${result.successCount} questions.`);
       if (result.errorCount > 0) {
@@ -50,7 +66,6 @@ const BulkQuestionUpload = () => {
       
       // Clear file input
       setFile(null);
-      // Reset file input by clearing its value
       const fileInput = document.getElementById('question-file');
       if (fileInput) fileInput.value = '';
       
@@ -59,6 +74,52 @@ const BulkQuestionUpload = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Parse CSV file
+  const parseCSV = (file) => {
+    return new Promise((resolve, reject) => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          if (results.errors && results.errors.length > 0) {
+            reject(new Error(`CSV parsing error: ${results.errors[0].message}`));
+          } else {
+            resolve(results.data);
+          }
+        },
+        error: (error) => {
+          reject(error);
+        }
+      });
+    });
+  };
+
+  // Parse Excel file
+  const parseExcel = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          resolve(jsonData);
+        } catch (error) {
+          reject(new Error('Failed to parse Excel file'));
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      reader.readAsBinaryString(file);
+    });
   };
 
   const downloadTemplate = () => {

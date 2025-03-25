@@ -53,3 +53,15 @@ export const bulkUploadQuestions = async (quizId, formData) => {
     throw error.response ? error.response.data : { message: 'Network error' };
   }
 };
+
+export const bulkUploadQuestionsAsJson = async (quizId, questions) => {
+  try {
+    const response = await api.post(`/questions/${quizId}/questions/bulk-upload-json`, {
+      questions
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Upload error:', error);
+    throw error.response ? error.response.data : { message: 'Network error' };
+  }
+};
