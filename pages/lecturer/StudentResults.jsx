@@ -91,7 +91,7 @@ const StudentResults = () => {
     // Format the data based on the export format
     if (exportFormat === 'csv') {
       // Create CSV content
-      const headers = ['Student Name', 'Email', 'Registration Number', 'Submission Time', 'Score', 'Total Points', 'Percentage', 'Published'];
+      const headers = ['Student Name', 'Email', 'Registration Number', 'Submission','Time', 'Score', 'Total Points', 'Percentage', 'Published'];
       
       const csvContent = [
         headers.join(','),
