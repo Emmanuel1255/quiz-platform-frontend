@@ -22,6 +22,7 @@ import CreateQuiz from '../pages/lecturer/CreateQuiz';
 import EditQuiz from '../pages/lecturer/EditQuiz';
 import StudentResults from '../pages/lecturer/StudentResults';
 import BulkQuestionUpload from '../pages/lecturer/BulkQuestionUpload';
+import StudentsList from '../pages/lecturer/StudentsList';
 
 import NotFoundPage from '../pages/NotFoundPage';
 
@@ -53,6 +54,7 @@ function App() {
               <Route path="lecturer/quizzes/create" element={<CreateQuiz />} />
               <Route path="lecturer/quizzes/:id" element={<EditQuiz />} />
               <Route path="lecturer/quizzes/:id/bulk-upload" element={<BulkQuestionUpload />} />
+              <Route path="lecturer/students" element={<StudentsList />} />
               
             </Route>
             

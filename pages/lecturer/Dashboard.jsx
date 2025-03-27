@@ -14,7 +14,7 @@ const LecturerDashboard = () => {
           This is your lecturer dashboard where you can manage quizzes and view student results.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           <div className="bg-blue-50 p-6 rounded-lg">
             <h3 className="text-lg font-medium mb-3">Quiz Management</h3>
             <p className="text-gray-600 mb-4">
@@ -38,6 +38,19 @@ const LecturerDashboard = () => {
               className="inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
             >
               View Results
+            </Link>
+          </div>
+          
+          <div className="bg-purple-50 p-6 rounded-lg">
+            <h3 className="text-lg font-medium mb-3">Students</h3>
+            <p className="text-gray-600 mb-4">
+              View and export student information.
+            </p>
+            <Link
+              to="/lecturer/students"
+              className="inline-block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+            >
+              Manage Students
             </Link>
           </div>
         </div>
