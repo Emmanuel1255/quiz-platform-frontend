@@ -12,6 +12,8 @@
   "dependencies": {
     "@tanstack/react-query": "^5.8.4",
     "axios": "^1.6.2",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "papaparse": "^5.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

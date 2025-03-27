@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllStudents } from '../../services/userService';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const StudentsList = () => {
   const [students, setStudents] = useState([]);
@@ -26,16 +28,9 @@ const StudentsList = () => {
     }
   };
 
-  const handleExportCSV = () => {
-    // Create CSV content
-    const headers = ['Name', 'Username', 'Email', 'Registration Number', 'Join Date'];
-    
-    const csvRows = [
-      headers.join(','),
-      ...students.filter(student => {
-        // Apply search filter
-        if (!searchTerm) return true;
-        
+  // Filter students based on search term
+  const filteredStudents = searchTerm
+    ? students.filter(student => {
         const searchLower = searchTerm.toLowerCase();
         return (
           student.name.toLowerCase().includes(searchLower) ||
@@ -43,7 +38,16 @@ const StudentsList = () => {
           student.email.toLowerCase().includes(searchLower) ||
           (student.registrationNumber && student.registrationNumber.toLowerCase().includes(searchLower))
         );
-      }).map(student => {
+      })
+    : students;
+
+  const handleExportCSV = () => {
+    // Create CSV content
+    const headers = ['Name', 'Username', 'Email', 'Registration Number', 'Join Date'];
+    
+    const csvRows = [
+      headers.join(','),
+      ...filteredStudents.map(student => {
         const joinDate = new Date(student.createdAt).toLocaleDateString();
         return [
           `"${student.name}"`,
@@ -69,18 +73,55 @@ const StudentsList = () => {
     document.body.removeChild(link);
   };
 
-  // Filter students based on search term
-  const filteredStudents = searchTerm
-    ? students.filter(student => {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-          student.name.toLowerCase().includes(searchLower) ||
-          student.username.toLowerCase().includes(searchLower) ||
-          student.email.toLowerCase().includes(searchLower) ||
-          (student.registrationNumber && student.registrationNumber.toLowerCase().includes(searchLower))
-        );
-      })
-    : students;
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Students List', 14, 22);
+    
+    // Add generation date
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+    
+    // Define the table
+    const tableColumn = ["Name", "Username", "Email", "Registration Number", "Join Date"];
+    
+    // Map the filtered students data to table rows
+    const tableRows = filteredStudents.map(student => [
+      student.name,
+      student.username,
+      student.email,
+      student.registrationNumber || 'N/A',
+      new Date(student.createdAt).toLocaleDateString()
+    ]);
+    
+    // Generate the table
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 40,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0]
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontSize: 11,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      margin: { top: 40 }
+    });
+    
+    // Save the PDF
+    doc.save('students_list.pdf');
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -112,13 +153,23 @@ const StudentsList = () => {
             />
           </div>
 
-          <button
-            onClick={handleExportCSV}
-            disabled={students.length === 0}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            Export as CSV
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={filteredStudents.length === 0}
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Export as CSV
+            </button>
+            
+            <button
+              onClick={handleExportPDF}
+              disabled={filteredStudents.length === 0}
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Export as PDF
+            </button>
+          </div>
         </div>
 
         {loading ? (
